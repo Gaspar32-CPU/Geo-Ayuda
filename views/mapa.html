@@ -32,28 +32,34 @@
         <button id="btn-ubicacion" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 w-4/5 rounded-lg transition">
           Usar ubicación actual
         </button>
-
-        <button id="btn-agregar-pin" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 w-4/5 rounded-lg transition mt-4">
-          Agregar Pin
-        </button>
       </div>
 
-      <h3 class="text-xl font-semibold text-blue-900 mb-3">Filtros</h3>
-      <div class="flex flex-wrap gap-2 mb-6">
-        <button onclick="filtrar('Todos', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Todos</button>
-        <button onclick="filtrar('Refugio', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Refugios</button>
-        <button onclick="filtrar('Comida', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Comida</button>
-        <button onclick="filtrar('Salud', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Salud</button>
+      <hr class="my-6 border-gray-300">
+
+      <div class="mt-6">
+        <h3 id="filtroh1" class="text-xl font-semibold text-blue-900 pt-2">Filtros</h3>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <button onclick="filtrar('Todos', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Todos</button>
+          <button onclick="filtrar('Refugio', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Refugios</button>
+          <button onclick="filtrar('Comida', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Comida</button>
+          <button onclick="filtrar('Salud', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Salud</button>
+        </div>
       </div>
+
+      <hr id="divider-pin" class="my-6 border-gray-300 hidden">
+
+      <button id="btn-agregar-pin" class="bg-green-600 hover:bg-green-700 w-4/5 text-white font-semibold py-3 my-3 rounded-lg transition hidden" disabled>
+        Agregar Pin
+      </button>
     </aside>
 
-    <!-- Mapa interactivo -->
+    <!-- Mapa -->
     <div class="flex-1 relative h-[600px]">
       <div id="map" class="w-full h-full z-0"></div>
     </div>
   </div>
 
-  <!-- Modal Formulario Agregar Pin -->
+  <!-- Modal Agregar Pin -->
   <div id="modal-pin" class="fixed inset-0 bg-black bg-opacity-40 items-center justify-center hidden z-50">
     <div class="bg-white rounded-2xl shadow-lg w-96 p-6 relative">
       <button id="cerrar-modal" class="absolute top-3 right-3 text-slate-500 hover:text-slate-800">&times;</button>
@@ -95,10 +101,8 @@
   </footer>
 
   <script>
-    // Crear mapa centrado en Montevideo
+    // Crear mapa
     const map = L.map("map").setView([-34.9011, -56.1645], 13);
-
-    // Capa base
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
@@ -110,9 +114,14 @@
       { lat: -34.916, lng: -56.153, titulo: "Centro de Salud Móvil", tipo: "Salud" },
     ];
 
-    const marcadores = puntos.map(p => {
+    // Recuperar pines guardados
+    const pinesGuardados = JSON.parse(localStorage.getItem("pinesUsuario")) || [];
+    const todosLosPuntos = [...puntos, ...pinesGuardados];
+
+    // Mostrar marcadores
+    const marcadores = todosLosPuntos.map(p => {
       const m = L.marker([p.lat, p.lng])
-        .bindPopup(`<b>${p.titulo}</b><br>${p.tipo}`)
+        .bindPopup(`<b>${p.titulo}</b><br>${p.tipo}<br>${p.descripcion || ""}`)
         .addTo(map);
       m.tipo = p.tipo;
       return m;
@@ -124,7 +133,6 @@
         if (tipo === "Todos" || m.tipo === tipo) map.addLayer(m);
         else map.removeLayer(m);
       });
-
       document.querySelectorAll(".filtro-btn").forEach(btn => {
         btn.classList.remove("bg-blue-800","text-white","shadow-lg");
         btn.classList.add("bg-slate-200","text-slate-700","hover:bg-slate-300");
@@ -136,9 +144,23 @@
     window.onload = () => {
       const botonTodos = document.querySelector(".filtro-btn:first-of-type");
       filtrar("Todos", botonTodos);
+
+      const btnAgregarPin = document.getElementById("btn-agregar-pin");
+      const dividerPin = document.getElementById("divider-pin");
+      const voluntarios = JSON.parse(localStorage.getItem("voluntarios")) || [];
+
+      if (voluntarios.length > 0) {
+        btnAgregarPin.classList.remove("hidden");
+        btnAgregarPin.disabled = false;
+        dividerPin.classList.remove("hidden");
+      } else {
+        btnAgregarPin.classList.add("hidden");
+        btnAgregarPin.disabled = true;
+        dividerPin.classList.add("hidden");
+      }
     };
 
-    // Ubicación del usuario
+    // Geolocalización
     document.getElementById("btn-ubicacion").addEventListener("click", () => {
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(pos => {
@@ -153,14 +175,21 @@
       } else alert("Tu navegador no soporta geolocalización");
     });
 
-    // Modal Agregar Pin
+    // Modal agregar pin
     const modal = document.getElementById("modal-pin");
     const btnAgregarPin = document.getElementById("btn-agregar-pin");
     const cerrarModal = document.getElementById("cerrar-modal");
     const formPin = document.getElementById("formPin");
 
-    btnAgregarPin.addEventListener("click", () => modal.classList.remove("hidden"));
-    cerrarModal.addEventListener("click", () => modal.classList.add("hidden"));
+    btnAgregarPin.addEventListener("click", () => {
+      modal.classList.remove("hidden");
+      modal.classList.add("flex", "items-center", "justify-center");
+    });
+
+    cerrarModal.addEventListener("click", () => {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex", "items-center", "justify-center");
+    });
 
     formPin.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -187,9 +216,10 @@
         marcador.tipo = nuevoPin.tipo;
         marcadores.push(marcador);
 
-        const pinsGuardados = JSON.parse(localStorage.getItem("pins")) || [];
-        pinsGuardados.push({ ...nuevoPin, lat, lng });
-        localStorage.setItem("pins", JSON.stringify(pinsGuardados));
+        // 🔹 Guardar en localStorage
+        const pinesUsuario = JSON.parse(localStorage.getItem("pinesUsuario")) || [];
+        pinesUsuario.push({ ...nuevoPin, lat, lng });
+        localStorage.setItem("pinesUsuario", JSON.stringify(pinesUsuario));
 
         map.off("click", colocarPin);
         map.closePopup(info);
@@ -198,7 +228,7 @@
       map.on("click", colocarPin);
     });
 
-    // Destacar página actual
+    // Resaltar página actual
     const links = document.querySelectorAll('.menu-link');
     const paginaActual = window.location.pathname.split('/').pop();
     links.forEach(link => {
@@ -207,7 +237,6 @@
         link.classList.remove('hover:text-slate-900');
       }
     });
-
   </script>
 
 </body>
