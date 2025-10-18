@@ -48,7 +48,3 @@ Además, el sistema **detecta en qué página se encuentra el usuario** y **resa
 ### 🔹 Detección de página activa
 - El script analiza la **URL actual** y añade una clase CSS (`active`) al botón del menú correspondiente, para indicar en qué sección está el usuario  
 
----
-
-## 📁 Estructura del proyecto
-
