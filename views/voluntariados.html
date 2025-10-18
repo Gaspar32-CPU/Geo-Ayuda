@@ -67,10 +67,9 @@
           <select id="tipo" name="tipo" required
             class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
             <option value="">Selecciona una opción</option>
-            <option value="Campañas de alimentos">Campañas de alimentos</option>
-            <option value="Campañas de ropa">Campañas de ropa</option>
-            <option value="Transporte y logística">Transporte y logística</option>
-            <option value="Asistencia a comedores/refugios">Asistencia a comedores/refugios</option>
+            <option value="Salud">Salud</option>
+            <option value="Refugio">Refugio</option>
+            <option value="Comida">Comida</option>
           </select>
         </div>
 
@@ -87,14 +86,15 @@
   </main>
 
   <footer class="py-6 bg-white border-t mt-10">
-    <div class="max-w-6xl mx-auto px-6 flex justify-between text-sm text-slate-600">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between text-sm text-slate-600">
       <p>GeoAyuda — Proyecto estudiantil TIC Grupo 4.</p>
-      <div class="space-x-4">
+      <p>geoayuda.proyecto@gmail.com</p>
+      <p>@geoayuda_oficial</p>
+      <div class="space-x-4 mt-2 md:mt-0">
         <a href="../index.html" class="hover:text-slate-900">Inicio</a>
-        <a href="../mapa.html" class="hover:text-slate-900">Mapa</a>
-        <a href="#" class="hover:text-slate-900">Contacto</a>
       </div>
     </div>
+
   </footer>
 
   <script>
@@ -109,13 +109,12 @@
       const mensaje = document.getElementById("mensajeExito");
 
       if (yaEsVoluntario) {
-        alert("❌ Ya estás registrado como voluntario. No se puede enviar nuevamente.");
-        // Asegurarse que el mensaje de éxito no aparezca
+        alert("Ya estás registrado como voluntario. No se puede enviar nuevamente.");
         mensaje.classList.add("hidden");
-        return; // Sale del submit, no guarda nada
+        return;
       }
 
-      // Datos del voluntario
+      // Datos del nuevo voluntario
       const datosVoluntario = {
         nombre: document.getElementById("nombre").value,
         email: document.getElementById("email").value,
@@ -126,18 +125,20 @@
         fecha: new Date().toISOString()
       };
 
-      // Guardar voluntario
+      // Guardar en localStorage
       voluntarios.push(datosVoluntario);
       localStorage.setItem("voluntarios", JSON.stringify(voluntarios));
 
       // Mostrar mensaje de éxito
       mensaje.classList.remove("hidden");
-      setTimeout(() => mensaje.classList.add("hidden"), 3000);
 
-      // Resetear formulario
-      this.reset();
+      // Esperar un momento y luego redirigir
+      setTimeout(() => {
+        window.location.href = "../index.html";
+      }, 1500);
     });
-</script>
+  </script>
+
 
 </body>
 </html>

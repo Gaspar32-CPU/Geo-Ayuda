@@ -55,7 +55,7 @@
 
     <!-- Mapa -->
     <div class="flex-1 relative h-[600px]">
-      <div id="map" class="w-full h-full z-0"></div>
+      <div id="map" class="w-full h-full z-0 rounded-lg"></div>
     </div>
   </div>
 
@@ -89,16 +89,17 @@
   </div>
 
   <!-- Footer -->
-  <footer class="py-6 bg-white border-t mt-10">
-    <div class="max-w-6xl mx-auto px-6 flex justify-between text-sm text-slate-600">
-      <p>GeoAyuda — Proyecto estudiantil TIC Grupo 4.</p>
-      <div class="space-x-4">
-        <a href="index.html" class="hover:text-slate-900">Inicio</a>
-        <a href="mapa.html" class="hover:text-slate-900">Mapa</a>
-        <a href="#" class="hover:text-slate-900">Contacto</a>
+  <footer class="py-6 bg-white border-t mt-24">
+      <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between text-sm text-slate-600">
+        <p>GeoAyuda — Proyecto estudiantil TIC Grupo 4.</p>
+        <p>geoayuda.proyecto@gmail.com</p>
+        <p>@geoayuda_oficial</p>
+        <div class="space-x-4 mt-2 md:mt-0">
+          <a href="../index.html" class="hover:text-slate-900">Inicio</a>
+        </div>
       </div>
-    </div>
-  </footer>
+
+    </footer>
 
   <script>
     // Crear mapa
@@ -107,11 +108,23 @@
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 
-    // Marcadores iniciales
+        // Marcadores iniciales
     const puntos = [
       { lat: -34.9011, lng: -56.1645, titulo: "Refugio Central", tipo: "Refugio" },
       { lat: -34.9065, lng: -56.1898, titulo: "Comedor Solidario", tipo: "Comida" },
       { lat: -34.916, lng: -56.153, titulo: "Centro de Salud Móvil", tipo: "Salud" },
+      { lat: -34.8948, lng: -56.1653, titulo: "Refugio Parque Rodó", tipo: "Refugio" },
+      { lat: -34.8892, lng: -56.1917, titulo: "Comedor La Unión", tipo: "Comida" },
+      { lat: -34.8835, lng: -56.1589, titulo: "Centro de Atención Médica Buceo", tipo: "Salud" },
+      { lat: -34.9287, lng: -56.1649, titulo: "Refugio Paso Molino", tipo: "Refugio" },
+      { lat: -34.9057, lng: -56.1365, titulo: "Comedor Ciudad Vieja", tipo: "Comida" },
+      { lat: -34.9215, lng: -56.1728, titulo: "Centro de Salud Cerro", tipo: "Salud" },
+      { lat: -34.8822, lng: -56.1925, titulo: "Refugio Tres Cruces", tipo: "Refugio" },
+      { lat: -34.9125, lng: -56.1810, titulo: "Comedor San José", tipo: "Comida" },
+      { lat: -34.8879, lng: -56.1532, titulo: "Posta Sanitaria Pocitos", tipo: "Salud" },
+      { lat: -34.9354, lng: -56.1640, titulo: "Refugio Nuevo París", tipo: "Refugio" },
+      { lat: -34.8983, lng: -56.1512, titulo: "Comedor del Puerto", tipo: "Comida" },
+      { lat: -34.9099, lng: -56.1975, titulo: "Centro de Salud Aguada", tipo: "Salud" }
     ];
 
     // Recuperar pines guardados
