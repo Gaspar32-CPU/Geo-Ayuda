@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoAyuda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  </head>
+
+  <body class="bg-slate-50 text-slate-800">
+    <!-- Navbar -->
+    <header class="flex justify-between items-center px-8 py-5 bg-white shadow-sm">
+      <div class="flex flex-row items-center">
+        <img src="logo.png" alt="Logo" class="w-10">
+        <h1 class="text-xl font-semibold text-slate-800">GeoAyuda</h1>
+      </div>
+      <nav class="flex items-center space-x-4">
+        <a href="index.html" class="menu-link text-slate-600 hover:text-slate-900">Inicio</a>
+
+        <!-- 🔹 Botón de Cerrar Sesión -->
+        <button id="cerrarSesion" class="hover:bg-red-600 text-slate-600 px-4 py-1 rounded-lg transition">
+          Cerrar sesión
+        </button>
+      </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="max-w-6xl mx-auto pt-16 pb-20 grid md:grid-cols-2 gap-10">
+      <div class="mt-10">
+        <h2 class="text-4xl font-bold mb-4 text-slate-900 leading-tight">
+          Conectamos ayuda en tiempo real para quienes más lo necesitan.
+        </h2>
+        <p class="text-slate-600 mt-4 mb-8">
+          Una plataforma que vincula ciudadanos, ONGs y voluntarios para dar
+          asistencia a personas en situación de calle.
+        </p>
+        <a href="/views/mapa.html" class="bg-blue-700 text-white px-5 py-3 rounded-lg font-medium hover:bg-blue-800 transition">
+          Ver recursos en el mapa
+        </a>
+      </div>
+
+      <!-- Mapa interactivo -->
+      <div class="bg-slate-100 rounded-2xl p-3">
+        <div id="map" class="w-full h-80 rounded-xl mb-4"></div>
+
+        <!-- Botones de filtro -->
+        <div class="flex space-x-2">
+          <p class="my-auto mx-5 text-sm text-slate-700">Vista previa</p>
+          <button onclick="filtrar('Todos', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Todos</button>
+          <button onclick="filtrar('Refugio', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Refugios</button>
+          <button onclick="filtrar('Comida', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Comida</button>
+          <button onclick="filtrar('Salud', this)" class="filtro-btn bg-slate-200 text-slate-700 px-3 py-1 rounded-full border text-sm hover:bg-slate-300 transition">Salud</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Funciones -->
+    <section class="max-w-6xl mx-auto px-6 py-16">
+      <h3 class="text-2xl font-bold text-slate-900 mb-4">Funciones principales</h3>
+      <p class="text-slate-600 mb-10">
+        Herramientas para asistir y conectarte con tu comunidad.
+      </p>
+      <div class="grid md:grid-cols-3 gap-10 items-stretch justify-center">
+        <a href="views/mapa.html" class="bg-white p-6 rounded-2xl shadow hover:shadow-md transition transform hover:bg-gray-200 duration-300 ease-in-out hover:scale-105 flex flex-col">
+          <h4 class="font-semibold text-slate-800 mb-2">Mapa en tiempo real</h4>
+          <p class="text-slate-600 text-sm flex-1">
+            Encuentra refugios, comedores, centros de salud y recursos cercanos a tu ubicación.
+          </p>
+        </a>
+
+        <a href="views/aviso-urgente.html" class="bg-white p-6 rounded-2xl shadow hover:shadow-md transition transform hover:bg-gray-200 duration-300 ease-in-out hover:scale-105 flex flex-col">
+          <h4 class="font-semibold text-slate-800 mb-2">Aviso urgente</h4>
+          <p class="text-slate-600 text-sm flex-1">
+            Reporta rápidamente si alguien necesita ayuda inmediata, con ubicación y detalles.
+          </p>
+        </a>
+
+        <a href="views/voluntariados.html" class="bg-white p-6 rounded-2xl shadow hover:shadow-md transition transform hover:bg-gray-200 duration-300 ease-in-out hover:scale-105 flex flex-col">
+          <h4 class="font-semibold text-slate-800 mb-2">Voluntariado</h4>
+          <p class="text-slate-600 text-sm flex-1">
+            Regístrate para apoyar campañas con ropa, comida o transporte.
+          </p>
+        </a>
+      </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer class="py-6 bg-white border-t mt-10">
+      <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between text-sm text-slate-600">
+        <p>GeoAyuda — Proyecto estudiantil TIC Grupo 4.</p>
+        <p>geoayuda.proyecto@gmail.com</p>
+        <p>@geoayuda_oficial</p>
+        <div class="space-x-4 mt-2 md:mt-0">
+          <a href="index.html" class="hover:text-slate-900">Inicio</a>
+        </div>
+      </div>
+
+    </footer>
+
+
+    <!-- Script del mapa y Cerrar Sesión -->
+    <script>
+      // Crear el mapa centrado en Montevideo
+      const map = L.map("map").setView([-34.9011, -56.1645], 13);
+
+      // Capa base gratuita (OpenStreetMap)
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+
+      // Datos de puntos
+      const puntos = [
+        { lat: -34.9011, lng: -56.1645, titulo: "Refugio Central", tipo: "Refugio" },
+        { lat: -34.9065, lng: -56.1898, titulo: "Comedor Solidario", tipo: "Comida" },
+        { lat: -34.916, lng: -56.153, titulo: "Centro de Salud Móvil", tipo: "Salud" },
+      ];
+
+      // Crear marcadores
+      const marcadores = puntos.map((p) => {
+        const m = L.marker([p.lat, p.lng])
+          .bindPopup(`<b>${p.titulo}</b><br>${p.tipo}`)
+          .addTo(map);
+        m.tipo = p.tipo;
+        return m;
+      });
+
+      // Función de filtrado
+      function filtrar(tipo, boton) {
+        marcadores.forEach((m) => {
+          if (tipo === "Todos" || m.tipo === tipo) {
+            map.addLayer(m);
+          } else {
+            map.removeLayer(m);
+          }
+        });
+
+        document.querySelectorAll(".filtro-btn").forEach((btn) => {
+          btn.classList.remove("bg-blue-800", "text-white", "shadow-lg");
+          btn.classList.add("bg-slate-200", "text-slate-700", "hover:bg-slate-300");
+        });
+
+        boton.classList.remove("bg-slate-200", "text-slate-700", "hover:bg-slate-300");
+        boton.classList.add("bg-blue-800", "text-white", "shadow-lg");
+      }
+
+      // Resaltar página actual
+      const links = document.querySelectorAll(".menu-link");
+      const paginaActual = window.location.pathname.split("/").pop();
+      links.forEach(link => {
+        if (link.getAttribute("href") === paginaActual) {
+          link.classList.add("text-white", "bg-blue-800", "px-4", "py-1", "rounded-lg", "font-medium", "transition");
+          link.classList.remove("hover:text-slate-900");
+        }
+      });
+
+      window.addEventListener("DOMContentLoaded", () => {
+        // Filtrado por defecto
+        const botonTodos = document.querySelector(".filtro-btn:first-of-type");
+        filtrar("Todos", botonTodos);
+
+        const cerrarSesionBtn = document.getElementById("cerrarSesion");
+
+        // Inicialmente ocultar el botón
+        cerrarSesionBtn.style.display = "none";
+
+        // Revisar si existe algún voluntario registrado
+        const voluntarios = JSON.parse(localStorage.getItem("voluntarios")) || [];
+        if (voluntarios.some(v => v.valuntario === true)) {
+          cerrarSesionBtn.style.display = "inline-block";
+          cerrarSesionBtn.classList.add("bg-red-500", "hover:bg-red-600", "text-white");
+        }
+      });
+
+      // Botón Cerrar Sesión
+      document.getElementById("cerrarSesion").addEventListener("click", () => {
+        localStorage.removeItem("voluntarios"); // limpiar registro
+        alert("Has cerrado sesión correctamente.");
+        window.location.href = "index.html";
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voluntariados — GeoAyuda</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans">
+  <!-- Header -->
+  <header class="flex justify-between items-center px-8 py-5 bg-white shadow-sm">
+    <div class="flex flex-row items-center">
+      <img src="../logo.png" alt="Logo" class="w-10">
+      <h1 class="text-xl font-semibold text-slate-800 ml-2">GeoAyuda</h1>
+    </div>
+    <nav class="flex items-center space-x-6">
+      <a href="../index.html" class="menu-link text-slate-600 hover:text-slate-900">Inicio</a>
+    </nav>
+  </header>
+
+  <!-- Formulario -->
+  <main class="flex flex-col items-center justify-center min-h-[80vh] px-4">
+    <div class="bg-white my-5 px-8 py-4 rounded-2xl shadow-md text-center max-w-md w-full border border-slate-200">
+      <h1 class="text-3xl font-bold text-blue-700 mb-2">Voluntariados</h1>
+      <p class="text-slate-600 mb-6">
+        Regístrate para apoyar campañas de ayuda, donaciones o asistencia a comedores/refugios.
+      </p>
+
+      <form id="voluntariadoForm" class="space-y-4 text-left">
+        <div>
+          <label for="nombre" class="block mb-1 font-medium text-slate-800">
+            Nombre completo
+          </label>
+          <input id="nombre" name="nombre" type="text" placeholder="Ej: Juan Pérez" required
+            class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+        </div>
+
+        <div>
+          <label for="email" class="block mb-1 font-medium text-slate-800">
+            Correo electrónico
+          </label>
+          <input id="email" name="email" type="email" placeholder="Ej: correo@ejemplo.com" required
+            class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+        </div>
+
+        <div>
+          <label for="telefono" class="block mb-1 font-medium text-slate-800">
+            Teléfono
+          </label>
+          <input id="telefono" name="telefono" type="tel" placeholder="Opcional"
+            class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+        </div>
+
+        <div>
+          <label for="ciudad" class="block mb-1 font-medium text-slate-800">
+            Ciudad
+          </label>
+          <input id="ciudad" name="ciudad" type="text" placeholder="Ej: Montevideo" required
+            class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+        </div>
+
+        <div>
+          <label for="tipo" class="block mb-1 font-medium text-slate-800">
+            Tipo de voluntariado
+          </label>
+          <select id="tipo" name="tipo" required
+            class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">Selecciona una opción</option>
+            <option value="Salud">Salud</option>
+            <option value="Refugio">Refugio</option>
+            <option value="Comida">Comida</option>
+          </select>
+        </div>
+
+        <button type="submit"
+          class="bg-blue-700 hover:bg-blue-800 text-white text-lg font-semibold py-3 px-5 rounded-lg w-full transition">
+          Enviar registro
+        </button>
+      </form>
+
+      <div id="mensajeExito" class="mt-4 font-semibold text-green-600 hidden">
+        ¡Registro guardado con éxito!
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-6 bg-white border-t mt-10">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between text-sm text-slate-600">
+      <p>GeoAyuda — Proyecto estudiantil TIC Grupo 4.</p>
+      <p>geoayuda.proyecto@gmail.com</p>
+      <p>@geoayuda_oficial</p>
+      <div class="space-x-4 mt-2 md:mt-0">
+        <a href="../index.html" class="hover:text-slate-900">Inicio</a>
+      </div>
+    </div>
+
+  </footer>
+
+  <script>
+    document.getElementById("voluntariadoForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      // Obtener array de voluntarios guardado o crear uno nuevo
+      let voluntarios = JSON.parse(localStorage.getItem("voluntarios")) || [];
+
+      // Revisar si ya hay un voluntario registrado
+      const yaEsVoluntario = voluntarios.some(v => v.valuntario === true);
+      const mensaje = document.getElementById("mensajeExito");
+
+      if (yaEsVoluntario) {
+        alert("Ya estás registrado como voluntario. No se puede enviar nuevamente.");
+        mensaje.classList.add("hidden");
+        return;
+      }
+
+      // Datos del nuevo voluntario
+      const datosVoluntario = {
+        nombre: document.getElementById("nombre").value,
+        email: document.getElementById("email").value,
+        telefono: document.getElementById("telefono").value,
+        ciudad: document.getElementById("ciudad").value,
+        tipo: document.getElementById("tipo").value,
+        valuntario: true,
+        fecha: new Date().toISOString()
+      };
+
+      // Guardar en localStorage
+      voluntarios.push(datosVoluntario);
+      localStorage.setItem("voluntarios", JSON.stringify(voluntarios));
+
+      // Mostrar mensaje de éxito
+      mensaje.classList.remove("hidden");
+
+      // Esperar un momento y luego redirigir
+      setTimeout(() => {
+        window.location.href = "../index.html";
+      }, 1500);
+    });
+  </script>
+
+
+</body>
+</html>
